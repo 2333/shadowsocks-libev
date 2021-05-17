@@ -924,11 +924,21 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
             server->buf->idx = offset;
         }
 
-        if (verbose) {
-            if ((atyp & ADDRTYPE_MASK) == 4)
-                LOGI("[%s] connect to [%s]:%d", remote_port, host, ntohs(port));
-            else
-                LOGI("[%s] connect to %s:%d", remote_port, host, ntohs(port));
+        char* peer_name = NULL;
+        peer_name = get_peer_name(server->fd);
+
+        if (verbose || true) {
+            if ((atyp & ADDRTYPE_MASK) == 4) {
+                if (peer_name != NULL)
+                    LOGI("[%s] %s connect to [%s]:%d", remote_port, peer_name, host, ntohs(port));
+                else
+                    LOGI("[%s] connect to [%s]:%d", remote_port, host, ntohs(port));
+            } else {
+                if (peer_name != NULL)
+                    LOGI("[%s] %s connect to [%s]:%d", remote_port, peer_name, host, ntohs(port));
+                else
+                    LOGI("[%s] connect to [%s]:%d", remote_port, host, ntohs(port));
+            }
         }
 
         if (!need_query) {
